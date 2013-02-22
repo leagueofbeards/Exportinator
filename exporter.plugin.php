@@ -3,8 +3,7 @@ namespace Habari;
 
 class Exporter extends Plugin
 {
-	private static function move_assets( $template_dir, $destination_path ) {
-		$assets = array('style' => 'style.css', 'images' => 'prettify.css');
+	private static function move_assets( $template_dir, $destination_path, $assets ) {
 		foreach( $assets as $asset ) {
 			copy( $template_dir . '/' . $asset, $destination_path . '/' . $asset );
 		}
@@ -32,6 +31,7 @@ class Exporter extends Plugin
 		$export_dir = $args['export_location'];
 		$templates = $args['template_types'];
 		$connected = $args['connected'] ? $args['connected']['items'] : false;
+		$assets = $args['assets'];
 		$menu = '';
 		
 		Common::create_dir( Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'] );
@@ -90,7 +90,7 @@ class Exporter extends Plugin
 			self::save( $filename, $export_dir, $args['export_name'], $file );
 		}
 		
-		self::move_assets( $template_dir, Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'] );
+		self::move_assets( $template_dir, Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'], $assets );
 	}
 }
 ?>
