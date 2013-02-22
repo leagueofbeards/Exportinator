@@ -46,27 +46,33 @@ class Exporter extends Plugin
 		}
 
 		foreach( $templates as $template ) {
-			$file = file_get_contents( $template_dir . '/' . $template . '.html' );
-			$contents = $objects[$template]['content'];
-
-			if( $connected == true ) {
-				$file = str_replace( "{pages}", $menu, $file );
-			}
-			
+			$contents = $objects[$template]['content'];			
 			if( $contents instanceof Posts ) {
 				foreach( $contents as $post ) {
+					$file = file_get_contents( $template_dir . '/' . $template . '.html' );
 					foreach($objects[$template]['fields'] as $field ) {
 						$file = str_replace( "{" . $field . "}", $post->$field, $file );
 					}
 					
+					if( $connected == true ) {
+						$file = str_replace( "{pages}", $menu, $file );
+					}
+
 					$filename = $post->slug . '.html';
+
 					self::save( $filename, $export_dir, $args['export_name'], $file );
 				}
 			} else {
+				$file = file_get_contents( $template_dir . '/' . $template . '.html' );
 				$post = $objects[$template]['content'];
+				
 				foreach($objects[$template]['fields'] as $field ) {
 					$file = str_replace( '{' . $field . '}', $post->$field, $file );
 				}
+			}
+
+			if( $connected == true ) {
+				$file = str_replace( "{pages}", $menu, $file );
 			}
 
 			if( $post->slug == $args['export_name'] ) {
@@ -74,7 +80,7 @@ class Exporter extends Plugin
 			} else {
 				$filename = $post->slug . '.html';
 			}
-			
+						
 			self::save( $filename, $export_dir, $args['export_name'], $file );
 		}
 		
