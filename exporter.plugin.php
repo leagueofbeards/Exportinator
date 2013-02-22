@@ -1,7 +1,15 @@
 <?php
 namespace Habari;
+
 class Exporter extends Plugin
 {
+	private static function move_assets( $template_dir, $destination_path ) {
+		$assets = array('style' => 'style.css', 'images' => 'prettify.css');
+		foreach( $assets as $asset ) {
+			copy( $template_dir . '/' . $asset, $destination_path . '/' . $asset );
+		}
+	}
+	
 	private static function save($filename, $export_dir, $folder, $file) {
 		try {
 			$fp = fopen( Site::get_path('user') . '/' . $export_dir . '/' . $folder . '/' . $filename, 'w' );
@@ -23,31 +31,41 @@ class Exporter extends Plugin
 		$template_dir = $args['template_location'];
 		$export_dir = $args['export_location'];
 		$templates = $args['template_types'];
-
-		Common::create_dir( Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'] );
+		$connected = $args['connected'] ? $args['connected'] : false;
+		$menu = '';
 		
+		Common::create_dir( Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'] );
+
+		if( $connected != false ) {
+			$contents = $objects[$connected]['content'];
+			if( $contents instanceof Posts ) {
+				foreach( $contents as $post ) {
+					$menu .= '<li><a href="' . $post->slug . '.html">' . $post->title . '</a></li>';
+				}
+			}
+		}
+
 		foreach( $templates as $template ) {
 			$file = file_get_contents( $template_dir . '/' . $template . '.html' );
 			$contents = $objects[$template]['content'];
+
+			if( $connected == true ) {
+				$file = str_replace( "{pages}", $menu, $file );
+			}
+			
 			if( $contents instanceof Posts ) {
 				foreach( $contents as $post ) {
 					foreach($objects[$template]['fields'] as $field ) {
 						$file = str_replace( "{" . $field . "}", $post->$field, $file );
 					}
 					
-					if( $post->slug == $args['export_name'] ) {
-						$filename = 'index.html';
-					} else {
-						$filename = $post->slug . '.html';
-					}
-				
+					$filename = $post->slug . '.html';
 					self::save( $filename, $export_dir, $args['export_name'], $file );
 				}
 			} else {
 				$post = $objects[$template]['content'];
-				
 				foreach($objects[$template]['fields'] as $field ) {
-					$file = str_replace( '{%' . $field . '%}', $post->$field, $file );
+					$file = str_replace( '{' . $field . '}', $post->$field, $file );
 				}
 			}
 
@@ -59,6 +77,8 @@ class Exporter extends Plugin
 			
 			self::save( $filename, $export_dir, $args['export_name'], $file );
 		}
+		
+		self::move_assets( $template_dir, Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'] );
 	}
 }
 ?>
