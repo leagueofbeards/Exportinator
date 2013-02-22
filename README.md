@@ -13,7 +13,7 @@ Download and install the plugin in the normal way. Once it is enabled, you shoul
 Creating templates
 -----
 
-The templates are plan HTML, with simple template tags sprinked throughout them. The tags use the following pattern: 
+The templates are plain HTML, with simple template tags sprinked throughout them. The tags use the following pattern: 
 
 `{tag}` or `{title}` or `{content}`
 
