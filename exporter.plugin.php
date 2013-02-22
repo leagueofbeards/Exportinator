@@ -31,13 +31,15 @@ class Exporter extends Plugin
 		$template_dir = $args['template_location'];
 		$export_dir = $args['export_location'];
 		$templates = $args['template_types'];
-		$connected = $args['connected'] ? $args['connected'] : false;
+		$connected = $args['connected'] ? $args['connected']['items'] : false;
 		$menu = '';
 		
 		Common::create_dir( Site::get_path('user') . '/' . $export_dir . '/' . $args['export_name'] );
 
 		if( $connected != false ) {
+			$parent = $args['connected']['parent'];
 			$contents = $objects[$connected]['content'];
+			
 			if( $contents instanceof Posts ) {
 				foreach( $contents as $post ) {
 					$menu .= '<li><a href="' . $post->slug . '.html">' . $post->title . '</a></li>';
@@ -55,6 +57,8 @@ class Exporter extends Plugin
 					}
 					
 					if( $connected == true ) {
+						$file = str_replace( "{d.title}", $parent->title, $file );
+						$file = str_replace( "{d.link}", 'index.html', $file );
 						$file = str_replace( "{pages}", $menu, $file );
 					}
 
@@ -69,6 +73,8 @@ class Exporter extends Plugin
 				foreach($objects[$template]['fields'] as $field ) {
 					$file = str_replace( '{' . $field . '}', $post->$field, $file );
 				}
+				
+				$file = str_replace( "{link}", 'index.html', $file );
 			}
 
 			if( $connected == true ) {
