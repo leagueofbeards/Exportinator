@@ -19,7 +19,7 @@ The templates are plan HTML, with simple template tags sprinked throughout them.
 
 The Exportinator will match these tags to the fields you pass in for each object you want to transform. Speaking of passing information to the Exportinator, here are the options you can pass:
 
-Options  	                                   | Description
+Options		                                   | Description
 ---------------------------------------------- | -----------
 `connected`										| Whethere or not the objects you are passing in are connected, an example would be if you are exporting an HTML version of a site.
 `export_name`									| Exprtinator creates a directory to store the exported files, in. We use this value for that.
@@ -57,3 +57,10 @@ Let's say you have two custom content types, document and page. You use these tw
 Then pass this multi-dimensional array to the Exporter and you are golden.
 
     Exporter::parse( $args );
+
+A couple of notes
+-----
+
+Currently the template names you pass to Exportinator must match the keys for your objects. This is how Exportinator decides what templates to apply to each content object you pass in.
+
+This system is being created to allow the transformation and export of content to any form. Right now it is being used to create flat, linked HTML but the hope is to have it support transformation into PDF and ePUB in the very near future. Anyone who would like to help make it more flexible, or add more export modes is welcome. I await your pull requests.
